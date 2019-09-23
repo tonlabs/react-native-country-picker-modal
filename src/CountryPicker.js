@@ -133,7 +133,7 @@ export default class CountryPicker extends Component {
     const disabledCountries = [...props.disabledCountries]
     this.disabledCountriesByCode = {};
     disabledCountries.forEach(c => {
-      this.disabledCountriesByCode[c] = 1;
+      this.disabledCountriesByCode[c] = true;
     });
 
     // Sort country list
@@ -325,8 +325,9 @@ export default class CountryPicker extends Component {
 
   renderCountryDetail(cca2) {
     const country = countries[cca2]
-    const textStyle = this.disabledCountriesByCode[cca2] ? styles.disabledCountryName : styles.countryName;
-    const disabledCountryText = this.disabledCountriesByCode[cca2] ? `. ${this.props.disabledCountryText}` : '';
+    const isCountryDisabled = this.disabledCountriesByCode[cca2];
+    const textStyle = isCountryDisabled ? styles.disabledCountryName : styles.countryName;
+    const disabledCountryText = isCountryDisabled ? `. ${this.props.disabledCountryText}` : '';
     return (
       <View style={styles.itemCountry}>
         {CountryPicker.renderFlag(cca2)}
