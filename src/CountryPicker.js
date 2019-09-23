@@ -30,7 +30,7 @@ let countries = null
 let Emoji = null
 let styles = {}
 
-let isEmojiable = Platform.OS === 'ios'
+let isEmojiable = false // Platform.OS === 'ios'
 
 const FLAG_TYPES = {
   flat: 'flat',
@@ -68,7 +68,7 @@ export default class CountryPicker extends Component {
     filterable: PropTypes.bool,
     children: PropTypes.node,
     countryList: PropTypes.array,
-    excludeCountries: PropTypes.array,
+    disabledCountries: PropTypes.array,
     styles: PropTypes.object,
     filterPlaceholder: PropTypes.string,
     autoFocusFilter: PropTypes.bool,
@@ -88,7 +88,7 @@ export default class CountryPicker extends Component {
   static defaultProps = {
     translation: 'eng',
     countryList: cca2List,
-    excludeCountries: [],
+    disabledCountries: [],
     filterPlaceholder: 'Filter',
     autoFocusFilter: true,
     transparent: false,
@@ -130,15 +130,11 @@ export default class CountryPicker extends Component {
 
     setCountries(props.flagType)
     let countryList = [...props.countryList]
-    const excludeCountries = [...props.excludeCountries]
-
-    excludeCountries.forEach(excludeCountry => {
-      const index = countryList.indexOf(excludeCountry)
-
-      if (index !== -1) {
-        countryList.splice(index, 1)
-      }
-    })
+    const disabledCountries = [...props.disabledCountries]
+    this.disabledCountriesByCode = {};
+    disabledCountries.forEach(c => {
+      this.disabledCountriesByCode[c] = true;
+    });
 
     // Sort country list
     countryList = countryList
@@ -293,17 +289,23 @@ export default class CountryPicker extends Component {
     })
   }
 
-  renderCountry(country, index) {
+  renderCountry = (country, index) => {
+    if (this.disabledCountriesByCode[country]) {
+      return (
+        <View key={index}>
+          {this.renderCountryDetail(country)}
+        </View>
+      );
+    }
     return (
       <TouchableOpacity
         key={index}
         onPress={() => this.onSelectCountry(country)}
-        activeOpacity={0.99}
       >
         {this.renderCountryDetail(country)}
       </TouchableOpacity>
     )
-  }
+  };
 
   renderLetters(letter, index) {
     return (
@@ -323,15 +325,19 @@ export default class CountryPicker extends Component {
 
   renderCountryDetail(cca2) {
     const country = countries[cca2]
+    const isCountryDisabled = this.disabledCountriesByCode[cca2];
+    const textStyle = isCountryDisabled ? styles.disabledCountryName : styles.countryName;
+    const disabledCountryText = isCountryDisabled ? `. ${this.props.disabledCountryText}` : '';
     return (
       <View style={styles.itemCountry}>
         {CountryPicker.renderFlag(cca2)}
         <View style={styles.itemCountryName}>
-          <Text style={styles.countryName} allowFontScaling={false}>
+          <Text style={textStyle} allowFontScaling={false}>
             {this.getCountryName(country)}
             {this.props.showCallingCode &&
             country.callingCode &&
             <Text>{` (+${country.callingCode})`}</Text>}
+            {disabledCountryText}
           </Text>
         </View>
       </View>
@@ -386,52 +392,45 @@ export default class CountryPicker extends Component {
             </View>
           )}
         </TouchableOpacity>
-        <Modal
-          transparent={this.props.transparent}
-          animationType={this.props.animationType}
-          visible={this.state.modalVisible}
-          onRequestClose={() => this.setState({ modalVisible: false })}
-        >
-          <SafeAreaView style={styles.modalContainer}>
-            <View style={styles.header}>
-              {this.props.closeable && (
-                <CloseButton
-                  image={this.props.closeButtonImage}
-                  styles={[styles.closeButton, styles.closeButtonImage]}
-                  onPress={() => this.onClose()}
-                />
-              )}
-              {this.props.filterable && this.renderFilter()}
-            </View>
-            <KeyboardAvoidingView behavior="padding">
-              <View style={styles.contentContainer}>
-                <ListView
+        <SafeAreaView style={styles.modalContainer}>
+          <View style={styles.header}>
+            {this.props.closeable && (
+              <CloseButton
+                image={this.props.closeButtonImage}
+                styles={[styles.closeButton, styles.closeButtonImage]}
+                onPress={() => this.onClose()}
+              />
+            )}
+            {this.props.filterable && this.renderFilter()}
+          </View>
+          <KeyboardAvoidingView behavior="padding">
+            <View style={styles.contentContainer}>
+              <ListView
+                keyboardShouldPersistTaps="always"
+                enableEmptySections
+                ref={listView => (this._listView = listView)}
+                dataSource={this.state.dataSource}
+                renderRow={this.renderCountry}
+                initialListSize={30}
+                pageSize={15}
+                onLayout={({ nativeEvent: { layout: { y: offset } } }) =>
+                  this.setVisibleListHeight(offset)
+                }
+              />
+              {!this.props.hideAlphabetFilter && (
+                <ScrollView
+                  contentContainerStyle={styles.letters}
                   keyboardShouldPersistTaps="always"
-                  enableEmptySections
-                  ref={listView => (this._listView = listView)}
-                  dataSource={this.state.dataSource}
-                  renderRow={country => this.renderCountry(country)}
-                  initialListSize={30}
-                  pageSize={15}
-                  onLayout={({ nativeEvent: { layout: { y: offset } } }) =>
-                    this.setVisibleListHeight(offset)
-                  }
-                />
-                {!this.props.hideAlphabetFilter && (
-                  <ScrollView
-                    contentContainerStyle={styles.letters}
-                    keyboardShouldPersistTaps="always"
-                  >
-                    {this.state.filter === '' &&
-                      this.state.letters.map((letter, index) =>
-                        this.renderLetters(letter, index)
-                      )}
-                  </ScrollView>
-                )}
-              </View>
-            </KeyboardAvoidingView>
-          </SafeAreaView>
-        </Modal>
+                >
+                  {this.state.filter === '' &&
+                  this.state.letters.map((letter, index) =>
+                    this.renderLetters(letter, index)
+                  )}
+                </ScrollView>
+              )}
+            </View>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </View>
     )
   }
