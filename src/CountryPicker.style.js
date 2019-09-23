@@ -1,4 +1,4 @@
-import { StyleSheet, PixelRatio } from 'react-native'
+import { StyleSheet, PixelRatio, Platform } from 'react-native'
 import { getHeightPercent } from './ratio'
 
 export default StyleSheet.create({
@@ -30,11 +30,10 @@ export default StyleSheet.create({
     height: 19
   },
   imgStyle: {
-    resizeMode: 'contain',
-    width: 25,
-    height: 19,
-    borderWidth: 1 / PixelRatio.get(),
-    borderColor: '#eee',
+    resizeMode: 'stretch',
+    width: 24,
+    height: 16,
+    borderRadius: Platform.OS === 'web' ? 4 : 2,
     opacity: 0.8
   },
   emojiFlag: {
@@ -67,6 +66,9 @@ export default StyleSheet.create({
     height: 20
   },
   countryName: {
+    fontSize: getHeightPercent(2.2)
+  },
+  disabledCountryName: {
     fontSize: getHeightPercent(2.2)
   },
   scrollView: {
