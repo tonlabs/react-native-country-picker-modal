@@ -53,10 +53,7 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   itemCountryFlag: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: '7%',
-    width: '15%'
+    marginHorizontal: 16,
   },
   itemCountryName: {
     justifyContent: 'center',
