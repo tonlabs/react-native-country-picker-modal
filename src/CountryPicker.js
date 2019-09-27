@@ -12,7 +12,7 @@ import {
   Modal,
   Text,
   TextInput,
-  ListView,
+  FlatList,
   SafeAreaView,
   ScrollView,
   Platform
@@ -50,8 +50,6 @@ const setCountries = flagType => {
     Emoji = <View />
   }
 }
-
-const ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })
 
 setCountries()
 
@@ -149,8 +147,8 @@ export default class CountryPicker extends Component {
     this.state = {
       modalVisible: false,
       cca2List: countryList,
-      dataSource: ds.cloneWithRows(countryList),
       filter: '',
+      cca2ListFiltered: null,
       letters: this.getLetters(countryList)
     }
 
@@ -192,7 +190,6 @@ export default class CountryPicker extends Component {
     if (nextProps.countryList !== this.props.countryList) {
       this.setState({
         cca2List: nextProps.countryList,
-        dataSource: ds.cloneWithRows(nextProps.countryList)
       })
     }
   }
@@ -201,7 +198,7 @@ export default class CountryPicker extends Component {
     this.setState({
       modalVisible: false,
       filter: '',
-      dataSource: ds.cloneWithRows(this.state.cca2List)
+      cca2ListFiltered: null,
     })
 
     this.props.onChange({
@@ -216,7 +213,7 @@ export default class CountryPicker extends Component {
     this.setState({
       modalVisible: false,
       filter: '',
-      dataSource: ds.cloneWithRows(this.state.cca2List)
+      cca2ListFiltered: null,
     })
     if (this.props.onClose) {
       this.props.onClose()
@@ -272,40 +269,34 @@ export default class CountryPicker extends Component {
     }
 
     // scroll
-    this._listView.scrollTo({
-      y: position
+    this.flatList.scrollToOffset({
+      offset: position
     })
   }
 
   handleFilterChange = value => {
     const filteredCountries =
-      value === '' ? this.state.cca2List : this.fuse.search(value)
+      value === '' ? null : this.fuse.search(value)
 
-    this._listView.scrollTo({ y: 0 })
+    this.flatList.scrollToOffset({ offset: 0 })
 
     this.setState({
       filter: value,
-      dataSource: ds.cloneWithRows(filteredCountries)
+      cca2ListFiltered: filteredCountries,
     })
   }
 
-  renderCountry = (country, index) => {
-    if (this.disabledCountriesByCode[country]) {
-      return (
-        <View key={index}>
-          {this.renderCountryDetail(country)}
-        </View>
-      );
-    }
+  renderCountry = ({item}) => {
+    const country = item;
     return (
       <TouchableOpacity
-        key={index}
+        key={country}
         onPress={() => this.onSelectCountry(country)}
       >
         {this.renderCountryDetail(country)}
       </TouchableOpacity>
     )
-  };
+  }
 
   renderLetters(letter, index) {
     return (
@@ -371,6 +362,10 @@ export default class CountryPicker extends Component {
     )
   }
 
+  onRef = (ref) => {
+      this.flatList = ref;
+  }
+
   render() {
     return (
       <View style={styles.container}>
@@ -405,14 +400,12 @@ export default class CountryPicker extends Component {
           </View>
           <KeyboardAvoidingView behavior="padding">
             <View style={styles.contentContainer}>
-              <ListView
+              <FlatList
                 keyboardShouldPersistTaps="always"
-                enableEmptySections
-                ref={listView => (this._listView = listView)}
-                dataSource={this.state.dataSource}
-                renderRow={this.renderCountry}
-                initialListSize={30}
-                pageSize={15}
+                ref={this.onRef}
+                data={this.state.cca2ListFiltered || this.state.cca2List}
+                renderItem={this.renderCountry}
+                initialNumToRender={30}
                 onLayout={({ nativeEvent: { layout: { y: offset } } }) =>
                   this.setVisibleListHeight(offset)
                 }
