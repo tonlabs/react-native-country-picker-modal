@@ -26,16 +26,16 @@ import CloseButton from './CloseButton'
 import countryPickerStyles from './CountryPicker.style'
 import KeyboardAvoidingView from './KeyboardAvoidingView'
 
-let countries = null
-let Emoji = null
-let styles = {}
+let countries = null;
+let Emoji = null;
+let styles = {};
 
-let isEmojiable = false // Platform.OS === 'ios'
+let isEmojiable = false; // Platform.OS === 'ios'
 
 const FLAG_TYPES = {
   flat: 'flat',
   emoji: 'emoji'
-}
+};
 
 const setCountries = flagType => {
   if (typeof flagType !== 'undefined') {
@@ -43,18 +43,18 @@ const setCountries = flagType => {
   }
 
   if (isEmojiable) {
-    countries = require('../data/countries-emoji')
+    countries = require('../data/countries-emoji');
     Emoji = require('./emoji').default
   } else {
-    countries = require('../data/countries')
+    countries = require('../data/countries');
     Emoji = <View />
   }
-}
+};
 
 setCountries()
 
 export const getAllCountries = () =>
-  cca2List.map(cca2 => ({ ...countries[cca2], cca2 }))
+  cca2List.map(cca2 => ({ ...countries[cca2], cca2 }));
 
 export default class CountryPicker extends Component {
   static propTypes = {
@@ -67,6 +67,7 @@ export default class CountryPicker extends Component {
     children: PropTypes.node,
     countryList: PropTypes.array,
     disabledCountries: PropTypes.array,
+    excludedCountries: PropTypes.array,
     styles: PropTypes.object,
     filterPlaceholder: PropTypes.string,
     autoFocusFilter: PropTypes.bool,
@@ -81,17 +82,18 @@ export default class CountryPicker extends Component {
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
     filterOptions: PropTypes.object
-  }
+  };
 
   static defaultProps = {
     translation: 'eng',
     countryList: cca2List,
     disabledCountries: [],
+    excludedCountries: [],
     filterPlaceholder: 'Filter',
     autoFocusFilter: true,
     transparent: false,
     animationType: 'none'
-  }
+  };
 
   static renderEmojiFlag(cca2, emojiStyle) {
     return (
@@ -123,26 +125,33 @@ export default class CountryPicker extends Component {
   }
 
   constructor(props) {
-    super(props)
-    this.openModal = this.openModal.bind(this)
+    super(props);
+    this.openModal = this.openModal.bind(this);
 
-    setCountries(props.flagType)
-    let countryList = [...props.countryList]
-    const disabledCountries = [...props.disabledCountries]
+    setCountries(props.flagType);
+    let countryList = [...props.countryList];
+
+    const disabledCountries = [...props.disabledCountries];
     this.disabledCountriesByCode = {};
     disabledCountries.forEach(c => {
       this.disabledCountriesByCode[c] = true;
     });
 
+    const excludedCountries = [...props.excludedCountries];
+
     // Sort country list
     countryList = countryList
-      .map(c => [c, this.getCountryName(countries[c])])
+      .map(c => {
+        if (!excludedCountries.includes(c)) {
+          return [c, this.getCountryName(countries[c])]
+        }
+      })
       .sort((a, b) => {
-        if (a[1] < b[1]) return -1
-        if (a[1] > b[1]) return 1
+        if (a[1] < b[1]) return -1;
+        if (a[1] > b[1]) return 1;
         return 0
       })
-      .map(c => c[0])
+      .map(c => c[0]);
 
     this.state = {
       modalVisible: false,
@@ -150,7 +159,7 @@ export default class CountryPicker extends Component {
       filter: '',
       cca2ListFiltered: null,
       letters: this.getLetters(countryList)
-    }
+    };
 
     if (this.props.styles) {
       Object.keys(countryPickerStyles).forEach(key => {
@@ -158,7 +167,7 @@ export default class CountryPicker extends Component {
           countryPickerStyles[key],
           this.props.styles[key]
         ])
-      })
+      });
       styles = StyleSheet.create(styles)
     } else {
       styles = countryPickerStyles
@@ -199,7 +208,7 @@ export default class CountryPicker extends Component {
       modalVisible: false,
       filter: '',
       cca2ListFiltered: null,
-    })
+    });
 
     this.props.onChange({
       cca2,
@@ -214,14 +223,14 @@ export default class CountryPicker extends Component {
       modalVisible: false,
       filter: '',
       cca2ListFiltered: null,
-    })
+    });
     if (this.props.onClose) {
       this.props.onClose()
     }
-  }
+  };
 
   getCountryName(country, optionalTranslation) {
-    const translation = optionalTranslation || this.props.translation || 'eng'
+    const translation = optionalTranslation || this.props.translation || 'eng';
     return country.name[translation] || country.name.common
   }
 
@@ -243,11 +252,11 @@ export default class CountryPicker extends Component {
     ).sort()
   }
 
-  openModal = this.openModal.bind(this)
+  openModal = this.openModal.bind(this);
 
   // dimensions of country list and window
-  itemHeight = getHeightPercent(7)
-  listHeight = countries.length * this.itemHeight
+  itemHeight = getHeightPercent(7);
+  listHeight = countries.length * this.itemHeight;
 
   openModal() {
     this.setState({ modalVisible: true })
@@ -257,11 +266,11 @@ export default class CountryPicker extends Component {
     // find position of first country that starts with letter
     const index = this.state.cca2List
       .map(country => this.getCountryName(countries[country])[0])
-      .indexOf(letter)
+      .indexOf(letter);
     if (index === -1) {
       return
     }
-    let position = index * this.itemHeight
+    let position = index * this.itemHeight;
 
     // do not scroll past the end of the list
     if (position + this.visibleListHeight > this.listHeight) {
@@ -276,15 +285,15 @@ export default class CountryPicker extends Component {
 
   handleFilterChange = value => {
     const filteredCountries =
-      value === '' ? null : this.fuse.search(value)
+      value === '' ? null : this.fuse.search(value);
 
-    this.flatList.scrollToOffset({ offset: 0 })
+    this.flatList.scrollToOffset({ offset: 0 });
 
     this.setState({
       filter: value,
       cca2ListFiltered: filteredCountries,
     })
-  }
+  };
 
   renderCountry = ({item}) => {
     const country = item;
@@ -296,7 +305,7 @@ export default class CountryPicker extends Component {
         {this.renderCountryDetail(country)}
       </TouchableOpacity>
     )
-  }
+  };
 
   renderLetters(letter, index) {
     return (
