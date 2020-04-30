@@ -342,9 +342,17 @@ export interface CountryPickerProps {
    */
   filterable?: boolean;
   /**
+   * Custom text that you may want to render after disabled country name
+   */
+  disabledCountryText?: string;
+  /**
+   * List of custom CCA2 countries you want to render in gray disabled color
+   */
+  disabledCountries?: CCA2Code[];
+  /**
    * List of custom CCA2 countries you don't want to render
    */
-  excludeCountries?: CCA2Code[];
+  excludedCountries?: CCA2Code[];
   /**
    * The search bar placeholder
    */

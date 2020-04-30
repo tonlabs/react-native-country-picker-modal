@@ -137,15 +137,19 @@ export default class CountryPicker extends Component {
       this.disabledCountriesByCode[c] = true;
     });
 
+    // Exclude countries from the list
     const excludedCountries = [...props.excludedCountries];
+    excludedCountries.forEach(excludedCountry => {
+      const index = countryList.indexOf(excludedCountry);
+
+      if (index !== -1) {
+        countryList.splice(index, 1)
+      }
+    });
 
     // Sort country list
     countryList = countryList
-      .map(c => {
-        if (!excludedCountries.includes(c)) {
-          return [c, this.getCountryName(countries[c])]
-        }
-      })
+      .map(c => [c, this.getCountryName(countries[c])])
       .sort((a, b) => {
         if (a[1] < b[1]) return -1;
         if (a[1] > b[1]) return 1;
