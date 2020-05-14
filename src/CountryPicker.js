@@ -208,14 +208,15 @@ export default class CountryPicker extends Component {
   }
 
   onSelectCountry(cca2) {
-    this.setState({
-      modalVisible: false,
-      filter: '',
-      cca2ListFiltered: null,
-    });
-
     const isCountryDisabled = this.disabledCountriesByCode[cca2];
+
     if (!isCountryDisabled) {
+      this.setState({
+        modalVisible: false,
+        filter: '',
+        cca2ListFiltered: null,
+      });
+
       this.props.onChange({
         cca2,
         ...countries[cca2],
