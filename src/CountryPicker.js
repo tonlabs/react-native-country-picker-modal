@@ -214,12 +214,15 @@ export default class CountryPicker extends Component {
       cca2ListFiltered: null,
     });
 
-    this.props.onChange({
-      cca2,
-      ...countries[cca2],
-      flag: undefined,
-      name: this.getCountryName(countries[cca2])
-    })
+    const isCountryDisabled = this.disabledCountriesByCode[cca2];
+    if (!isCountryDisabled) {
+      this.props.onChange({
+        cca2,
+        ...countries[cca2],
+        flag: undefined,
+        name: this.getCountryName(countries[cca2])
+      })
+    }
   }
 
   onClose = () => {
