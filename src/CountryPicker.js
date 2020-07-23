@@ -9,13 +9,11 @@ import {
   View,
   Image,
   TouchableOpacity,
-  Modal,
   Text,
   TextInput,
   FlatList,
   SafeAreaView,
   ScrollView,
-  Platform
 } from 'react-native'
 
 import Fuse from 'fuse.js'
@@ -51,7 +49,7 @@ const setCountries = flagType => {
   }
 };
 
-setCountries()
+setCountries();
 
 export const getAllCountries = () =>
   cca2List.map(cca2 => ({ ...countries[cca2], cca2 }));
@@ -81,7 +79,9 @@ export default class CountryPicker extends Component {
     hideAlphabetFilter: PropTypes.bool,
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
-    filterOptions: PropTypes.object
+    filterOptions: PropTypes.object,
+    isLanguages: PropTypes.bool,
+    languagesList: PropTypes.array,
   };
 
   static defaultProps = {
@@ -92,7 +92,9 @@ export default class CountryPicker extends Component {
     filterPlaceholder: 'Filter',
     autoFocusFilter: true,
     transparent: false,
-    animationType: 'none'
+    animationType: 'none',
+    isLanguages: false,
+    languagesList: [],
   };
 
   static renderEmojiFlag(cca2, emojiStyle) {
@@ -310,7 +312,7 @@ export default class CountryPicker extends Component {
         key={country}
         onPress={() => this.onSelectCountry(country)}
       >
-        {this.renderCountryDetail(country)}
+        {this.props.isLanguages ? this.renderLanguageDetail(country) : this.renderCountryDetail(country)}
       </TouchableOpacity>
     )
   };
@@ -332,10 +334,11 @@ export default class CountryPicker extends Component {
   }
 
   renderCountryDetail(cca2) {
-    const country = countries[cca2]
+    const country = countries[cca2];
     const isCountryDisabled = this.disabledCountriesByCode[cca2];
     const textStyle = isCountryDisabled ? styles.disabledCountryName : styles.countryName;
     const disabledCountryText = isCountryDisabled ? `. ${this.props.disabledCountryText}` : '';
+
     return (
       <View style={styles.itemCountry}>
         {CountryPicker.renderFlag(cca2)}
@@ -352,17 +355,36 @@ export default class CountryPicker extends Component {
     )
   }
 
+  renderLanguageDetail(cca2) {
+    const language = this.props.languagesList.find(lang => lang.cca2 === cca2);
+    const isDisabled = this.disabledCountriesByCode[cca2];
+    const textStyle = isDisabled ? styles.disabledCountryName : styles.countryName;
+    const disabledText = isDisabled ? `. ${language.disabledText}...` : '';
+
+    return (
+      <View style={styles.itemCountry}>
+        {CountryPicker.renderFlag(cca2)}
+        <View style={styles.itemCountryName}>
+          <Text style={textStyle} allowFontScaling={false}>
+            {language.name}
+            {disabledText}
+          </Text>
+        </View>
+      </View>
+    )
+  }
+
   renderFilter = () => {
     const {
       renderFilter,
       autoFocusFilter,
       filterPlaceholder,
       filterPlaceholderTextColor
-    } = this.props
+    } = this.props;
 
-    const value = this.state.filter
-    const onChange = this.handleFilterChange
-    const onClose = this.onClose
+    const value = this.state.filter;
+    const onChange = this.handleFilterChange;
+    const onClose = this.onClose;
 
     return renderFilter ? (
       renderFilter({ value, onChange, onClose })
@@ -377,11 +399,11 @@ export default class CountryPicker extends Component {
         value={value}
       />
     )
-  }
+  };
 
   onRef = (ref) => {
       this.flatList = ref;
-  }
+  };
 
   render() {
     return (
