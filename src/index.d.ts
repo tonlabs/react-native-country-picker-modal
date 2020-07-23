@@ -12,6 +12,12 @@ export interface Country {
   name: { [key in TranslationLanguageCode]: string };
 }
 
+export interface Language {
+    cca2: string,
+    name: string,
+    disabledText: string,
+}
+
 /**
  * Country code, as specified in ISO 3166-1 alpha-2 (ie. `FR`, `US`, etc.)
  */
@@ -399,6 +405,14 @@ export interface CountryPickerProps {
       onClose: CountryPickerProps['onClose'];
     }
   ) => React.ReactNode;
+  /**
+   * if set to true, languages list will be shown
+   */
+  isLanguages: boolean;
+  /**
+   * list of languages to display when isLanguages is true
+   */
+  languagesList: Language[];
 }
 
 export default class CountryPicker extends React.Component<CountryPickerProps> {
