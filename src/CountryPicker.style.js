@@ -30,7 +30,7 @@ export default StyleSheet.create({
     height: 19
   },
   imgStyle: {
-    resizeMode: 'contain',
+    resizeMode: 'cover',
     width: 24,
     height: 24,
     borderRadius: 12,
