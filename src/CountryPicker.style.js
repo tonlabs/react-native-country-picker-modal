@@ -30,11 +30,10 @@ export default StyleSheet.create({
     height: 19
   },
   imgStyle: {
-    resizeMode: 'stretch',
+    resizeMode: 'cover',
     width: 24,
-    height: 16,
-    borderRadius: Platform.OS === 'web' ? 4 : 2,
-    opacity: 0.8
+    height: 24,
+    borderRadius: 12,
   },
   emojiFlag: {
     alignItems: 'center',
@@ -53,7 +52,8 @@ export default StyleSheet.create({
     alignItems: 'center'
   },
   itemCountryFlag: {
-    marginHorizontal: 16,
+    marginLeft: 16,
+    marginRight: 8,
   },
   itemCountryName: {
     justifyContent: 'center',
