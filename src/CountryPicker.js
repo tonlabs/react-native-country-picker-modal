@@ -35,7 +35,12 @@ const FLAG_TYPES = {
   emoji: 'emoji'
 };
 
-const setCountries = flagType => {
+const DATA_TYPES = {
+  countries: 'countries',
+  languages: 'languages',
+};
+
+const setCountries = (flagType) => {
   if (typeof flagType !== 'undefined') {
     isEmojiable = flagType === FLAG_TYPES.emoji
   }
@@ -76,12 +81,11 @@ export default class CountryPicker extends Component {
     transparent: PropTypes.bool,
     animationType: PropTypes.oneOf(['slide', 'fade', 'none']),
     flagType: PropTypes.oneOf(Object.values(FLAG_TYPES)),
+    dataType: PropTypes.oneOf(Object.values(DATA_TYPES)),
     hideAlphabetFilter: PropTypes.bool,
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
     filterOptions: PropTypes.object,
-    isLanguages: PropTypes.bool,
-    languagesList: PropTypes.array,
   };
 
   static defaultProps = {
@@ -93,8 +97,7 @@ export default class CountryPicker extends Component {
     autoFocusFilter: true,
     transparent: false,
     animationType: 'none',
-    isLanguages: false,
-    languagesList: [],
+    dataType: DATA_TYPES.countries,
   };
 
   static renderEmojiFlag(cca2, emojiStyle) {
@@ -189,11 +192,14 @@ export default class CountryPicker extends Component {
       keys: ['name'],
       id: 'id'
     }, this.props.filterOptions);
+
     this.fuse = new Fuse(
       countryList.reduce(
         (acc, item) => [
           ...acc,
-          { id: item, name: this.getCountryName(countries[item]) }
+          { id: item, name: this.props.dataType === DATA_TYPES.languages ?
+              this.getLanguageName(countries[item]) :
+              this.getCountryName(countries[item]) }
         ],
         []
       ),
@@ -241,7 +247,11 @@ export default class CountryPicker extends Component {
 
   getCountryName(country, optionalTranslation) {
     const translation = optionalTranslation || this.props.translation || 'eng';
-    return country.name[translation] || country.name.common
+    return country.name[translation] || country.name.common;
+  }
+
+  getLanguageName(country) {
+    return country.language.name;
   }
 
   setVisibleListHeight(offset) {
@@ -312,7 +322,7 @@ export default class CountryPicker extends Component {
         key={country}
         onPress={() => this.onSelectCountry(country)}
       >
-        {this.props.isLanguages ? this.renderLanguageDetail(country) : this.renderCountryDetail(country)}
+        {this.renderDetails(country)}
       </TouchableOpacity>
     )
   };
@@ -333,45 +343,43 @@ export default class CountryPicker extends Component {
     )
   }
 
-  renderCountryDetail(cca2) {
-    const country = countries[cca2];
-    const isCountryDisabled = this.disabledCountriesByCode[cca2];
-    const textStyle = isCountryDisabled ? styles.disabledCountryName : styles.countryName;
-    const disabledCountryText = isCountryDisabled ? `. ${this.props.disabledCountryText}` : '';
-
-    return (
-      <View style={styles.itemCountry}>
-        {CountryPicker.renderFlag(cca2)}
-        <View style={styles.itemCountryName}>
-          <Text style={textStyle} allowFontScaling={false}>
-            {this.getCountryName(country)}
-            {this.props.showCallingCode &&
-            country.callingCode &&
-            <Text>{` (+${country.callingCode})`}</Text>}
-            {disabledCountryText}
-          </Text>
-        </View>
-      </View>
-    )
-  }
-
-  renderLanguageDetail(cca2) {
-    const language = this.props.languagesList.find(lang => lang.cca2 === cca2);
+  renderDetails(cca2) {
+    const { dataType } = this.props;
+    const countryData = countries[cca2];
     const isDisabled = this.disabledCountriesByCode[cca2];
     const textStyle = isDisabled ? styles.disabledCountryName : styles.countryName;
-    const disabledText = isDisabled ? `. ${language.disabledText}...` : '';
 
-    return (
-      <View style={styles.itemCountry}>
-        {CountryPicker.renderFlag(cca2)}
-        <View style={styles.itemCountryName}>
-          <Text style={textStyle} allowFontScaling={false}>
-            {language.name}
-            {disabledText}
-          </Text>
-        </View>
-      </View>
-    )
+    switch (dataType) {
+      case DATA_TYPES.countries:
+        return (
+          <View style={styles.itemCountry}>
+            {CountryPicker.renderFlag(cca2)}
+            <View style={styles.itemCountryName}>
+              <Text style={textStyle} allowFontScaling={false}>
+                {this.getCountryName(countryData)}
+                {this.props.showCallingCode &&
+                countryData.callingCode &&
+                <Text>{` (+${countryData.callingCode})`}</Text>}
+                {isDisabled ? `. ${this.props.disabledCountryText}` : ''}
+              </Text>
+            </View>
+          </View>
+        );
+      case DATA_TYPES.languages:
+        return (
+          <View style={styles.itemCountry}>
+            {CountryPicker.renderFlag(cca2)}
+            <View style={styles.itemCountryName}>
+              <Text style={textStyle} allowFontScaling={false}>
+                {countryData.language.name || ''}
+                {isDisabled ? `. ${countryData.language.disabledText}...` : ''}
+              </Text>
+            </View>
+          </View>
+        );
+      default:
+        return null;
+    }
   }
 
   renderFilter = () => {
