@@ -35,11 +35,6 @@ const FLAG_TYPES = {
   emoji: 'emoji'
 };
 
-const DATA_TYPES = {
-  countries: 'countries',
-  languages: 'languages',
-};
-
 const setCountries = (flagType) => {
   if (typeof flagType !== 'undefined') {
     isEmojiable = flagType === FLAG_TYPES.emoji
@@ -60,6 +55,11 @@ export const getAllCountries = () =>
   cca2List.map(cca2 => ({ ...countries[cca2], cca2 }));
 
 export default class CountryPicker extends Component {
+  static dataTypes = {
+    countries: 'countries',
+    languages: 'languages',
+  };
+
   static propTypes = {
     cca2: PropTypes.string.isRequired,
     translation: PropTypes.string,
@@ -81,7 +81,7 @@ export default class CountryPicker extends Component {
     transparent: PropTypes.bool,
     animationType: PropTypes.oneOf(['slide', 'fade', 'none']),
     flagType: PropTypes.oneOf(Object.values(FLAG_TYPES)),
-    dataType: PropTypes.oneOf(Object.values(DATA_TYPES)),
+    dataType: PropTypes.oneOf(Object.values(CountryPicker.dataTypes)),
     hideAlphabetFilter: PropTypes.bool,
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
@@ -97,7 +97,7 @@ export default class CountryPicker extends Component {
     autoFocusFilter: true,
     transparent: false,
     animationType: 'none',
-    dataType: DATA_TYPES.countries,
+    dataType: CountryPicker.dataTypes.countries,
   };
 
   static renderEmojiFlag(cca2, emojiStyle) {
@@ -197,7 +197,7 @@ export default class CountryPicker extends Component {
       countryList.reduce(
         (acc, item) => [
           ...acc,
-          { id: item, name: this.props.dataType === DATA_TYPES.languages ?
+          { id: item, name: this.props.dataType === CountryPicker.dataTypes.languages ?
               this.getLanguageName(countries[item]) :
               this.getCountryName(countries[item]) }
         ],
@@ -350,7 +350,7 @@ export default class CountryPicker extends Component {
     const textStyle = isDisabled ? styles.disabledCountryName : styles.countryName;
 
     switch (dataType) {
-      case DATA_TYPES.countries:
+      case CountryPicker.dataTypes.countries:
         return (
           <View style={styles.itemCountry}>
             {CountryPicker.renderFlag(cca2)}
@@ -365,7 +365,7 @@ export default class CountryPicker extends Component {
             </View>
           </View>
         );
-      case DATA_TYPES.languages:
+      case CountryPicker.dataTypes.languages:
         return (
           <View style={styles.itemCountry}>
             {CountryPicker.renderFlag(cca2)}

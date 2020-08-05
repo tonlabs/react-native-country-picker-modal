@@ -305,11 +305,6 @@ export enum FlagType {
     EMOJI = 'emoji'
 }
 
-export enum DataType {
-    COUNTRIES = 'countries',
-    LANGUAGES = 'languages',
-}
-
 export enum AnimationType {
     SLIDE = 'slide',
     FADE = 'fade',
@@ -401,7 +396,7 @@ export interface CountryPickerProps {
      * Select which data list should be shown
      * @default DataType.COUNTRIES
      */
-    dataType?: DataType;
+    dataType?: string;
     /**
      * If set to true, prevents the alphabet filter rendering
      */
