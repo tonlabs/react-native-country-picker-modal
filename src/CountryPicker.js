@@ -352,8 +352,6 @@ export default class CountryPicker extends Component {
     const isDisabled = this.disabledCountriesByCode[cca2];
     const textStyle = isDisabled ? styles.disabledCountryName : styles.countryName;
 
-    console.log('YOLO props & selected', this.props, this.props.selected, cca2, countryData);
-
     switch (dataType) {
       case CountryPicker.dataTypes.countries:
         return (
@@ -367,7 +365,9 @@ export default class CountryPicker extends Component {
                 <Text>{` (+${countryData.callingCode})`}</Text>}
                 {isDisabled ? `. ${this.props.disabledCountryText}` : ''}
               </Text>
-              {this.props.selected && this.props.selected === cca2 && this.props.selectedItemImage
+              {this.props.selected
+              && this.props.selected.toLowerCase() === cca2.toLowerCase()
+              && this.props.selectedItemImage
                 ? (
                   <Image
                     source={this.props.selectedItemImage}
@@ -387,7 +387,9 @@ export default class CountryPicker extends Component {
                 {countryData.language.name || ''}
                 {isDisabled ? `. ${countryData.language.disabledText}...` : ''}
               </Text>
-              {this.props.selected && this.props.selected === cca2 && this.props.selectedItemImage
+              {this.props.selected
+              && this.props.selected.toLowerCase() === cca2.toLowerCase()
+              && this.props.selectedItemImage
                 ? (
                   <Image
                     source={this.props.selectedItemImage}
