@@ -123,7 +123,7 @@ export default class CountryPicker extends Component {
 
   static renderFlag(cca2, itemStyle, emojiStyle, imageStyle) {
     return (
-      <View style={[countryPickerStyles.itemCountryFlag, itemStyle]}>
+      <View style={[countryPickerStyles.flagRightMargin, itemStyle]}>
         {isEmojiable
           ? CountryPicker.renderEmojiFlag(cca2, emojiStyle)
           : CountryPicker.renderImageFlag(cca2, imageStyle)}
