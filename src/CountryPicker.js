@@ -352,6 +352,8 @@ export default class CountryPicker extends Component {
     const isDisabled = this.disabledCountriesByCode[cca2];
     const textStyle = isDisabled ? styles.disabledCountryName : styles.countryName;
 
+    console.log('YOLO props & selected', this.props, this.props.selected, cca2, countryData);
+
     switch (dataType) {
       case CountryPicker.dataTypes.countries:
         return (
