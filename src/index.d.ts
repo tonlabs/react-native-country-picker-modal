@@ -317,6 +317,10 @@ export interface CountryPickerProps {
      */
     cca2: CCA2Code;
     /**
+     * Country code of currently selected country/language
+     */
+    selected: CCA2Code;
+    /**
      * The handler when a country is selected
      */
     onChange: (value: Country) => void;

@@ -62,6 +62,7 @@ export default class CountryPicker extends Component {
 
   static propTypes = {
     cca2: PropTypes.string.isRequired,
+    selected: PropTypes.string,
     translation: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func,
@@ -364,7 +365,7 @@ export default class CountryPicker extends Component {
                 <Text>{` (+${countryData.callingCode})`}</Text>}
                 {isDisabled ? `. ${this.props.disabledCountryText}` : ''}
               </Text>
-              {this.props.selectedItemImage
+              {this.props.selected && this.props.selected === cca2 && this.props.selectedItemImage
                 ? (
                   <Image
                     source={this.props.selectedItemImage}
@@ -384,7 +385,7 @@ export default class CountryPicker extends Component {
                 {countryData.language.name || ''}
                 {isDisabled ? `. ${countryData.language.disabledText}...` : ''}
               </Text>
-              {this.props.selectedItemImage
+              {this.props.selected && this.props.selected === cca2 && this.props.selectedItemImage
                 ? (
                   <Image
                     source={this.props.selectedItemImage}
