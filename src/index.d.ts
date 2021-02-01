@@ -411,6 +411,14 @@ export interface CountryPickerProps {
             onClose: CountryPickerProps['onClose'];
         }
     ) => React.ReactNode;
+    /**
+     * Selected item Image
+     */
+    selectedItemImage?: ImageProps['source'];
+    /**
+     * If true, flags will be hidden
+     */
+    hideFlags?: boolean;
 }
 
 export default class CountryPicker extends React.Component<CountryPickerProps> {

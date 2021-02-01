@@ -85,7 +85,9 @@ export default class CountryPicker extends Component {
     hideAlphabetFilter: PropTypes.bool,
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
+    hideFlags: PropTypes.bool,
     filterOptions: PropTypes.object,
+    selectedItemImage: PropTypes.element
   };
 
   static defaultProps = {
@@ -353,7 +355,7 @@ export default class CountryPicker extends Component {
       case CountryPicker.dataTypes.countries:
         return (
           <View style={styles.itemCountry}>
-            {CountryPicker.renderFlag(cca2)}
+            {this.props.hideFlags ? null : CountryPicker.renderFlag(cca2)}
             <View style={styles.itemCountryName}>
               <Text style={textStyle} allowFontScaling={false}>
                 {this.getCountryName(countryData)}
@@ -362,18 +364,34 @@ export default class CountryPicker extends Component {
                 <Text>{` (+${countryData.callingCode})`}</Text>}
                 {isDisabled ? `. ${this.props.disabledCountryText}` : ''}
               </Text>
+              {this.props.selectedItemImage
+                ? (
+                  <Image
+                    source={this.props.selectedItemImage}
+                    style={styles.selectedItemImage}
+                  />
+                )
+                : null}
             </View>
           </View>
         );
       case CountryPicker.dataTypes.languages:
         return (
           <View style={styles.itemCountry}>
-            {CountryPicker.renderFlag(cca2)}
+            {this.props.hideFlags ? null : CountryPicker.renderFlag(cca2)}
             <View style={styles.itemCountryName}>
               <Text style={textStyle} allowFontScaling={false}>
                 {countryData.language.name || ''}
                 {isDisabled ? `. ${countryData.language.disabledText}...` : ''}
               </Text>
+              {this.props.selectedItemImage
+                ? (
+                  <Image
+                    source={this.props.selectedItemImage}
+                    style={styles.selectedItemImage}
+                  />
+                )
+                : null}
             </View>
           </View>
         );
