@@ -62,6 +62,7 @@ export default class CountryPicker extends Component {
 
   static propTypes = {
     cca2: PropTypes.string.isRequired,
+    selected: PropTypes.string,
     translation: PropTypes.string,
     onChange: PropTypes.func.isRequired,
     onClose: PropTypes.func,
@@ -85,7 +86,9 @@ export default class CountryPicker extends Component {
     hideAlphabetFilter: PropTypes.bool,
     renderFilter: PropTypes.func,
     showCallingCode: PropTypes.bool,
+    hideFlags: PropTypes.bool,
     filterOptions: PropTypes.object,
+    selectedItemImage: PropTypes.element
   };
 
   static defaultProps = {
@@ -121,7 +124,7 @@ export default class CountryPicker extends Component {
 
   static renderFlag(cca2, itemStyle, emojiStyle, imageStyle) {
     return (
-      <View style={[countryPickerStyles.itemCountryFlag, itemStyle]}>
+      <View style={[countryPickerStyles.flagRightMargin, itemStyle]}>
         {isEmojiable
           ? CountryPicker.renderEmojiFlag(cca2, emojiStyle)
           : CountryPicker.renderImageFlag(cca2, imageStyle)}
@@ -353,7 +356,7 @@ export default class CountryPicker extends Component {
       case CountryPicker.dataTypes.countries:
         return (
           <View style={styles.itemCountry}>
-            {CountryPicker.renderFlag(cca2)}
+            {this.props.hideFlags ? null : CountryPicker.renderFlag(cca2)}
             <View style={styles.itemCountryName}>
               <Text style={textStyle} allowFontScaling={false}>
                 {this.getCountryName(countryData)}
@@ -362,18 +365,38 @@ export default class CountryPicker extends Component {
                 <Text>{` (+${countryData.callingCode})`}</Text>}
                 {isDisabled ? `. ${this.props.disabledCountryText}` : ''}
               </Text>
+              {this.props.selected
+              && this.props.selected.toLowerCase() === cca2.toLowerCase()
+              && this.props.selectedItemImage
+                ? (
+                  <Image
+                    source={this.props.selectedItemImage}
+                    style={styles.selectedItemImage}
+                  />
+                )
+                : null}
             </View>
           </View>
         );
       case CountryPicker.dataTypes.languages:
         return (
           <View style={styles.itemCountry}>
-            {CountryPicker.renderFlag(cca2)}
+            {this.props.hideFlags ? null : CountryPicker.renderFlag(cca2)}
             <View style={styles.itemCountryName}>
               <Text style={textStyle} allowFontScaling={false}>
                 {countryData.language.name || ''}
                 {isDisabled ? `. ${countryData.language.disabledText}...` : ''}
               </Text>
+              {this.props.selected
+              && this.props.selected.toLowerCase() === cca2.toLowerCase()
+              && this.props.selectedItemImage
+                ? (
+                  <Image
+                    source={this.props.selectedItemImage}
+                    style={styles.selectedItemImage}
+                  />
+                )
+                : null}
             </View>
           </View>
         );

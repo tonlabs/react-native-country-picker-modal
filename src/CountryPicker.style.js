@@ -55,6 +55,9 @@ export default StyleSheet.create({
     marginLeft: 16,
     marginRight: 8,
   },
+  flagRightMargin: {
+    marginRight: 8,
+  },
   itemCountryName: {
     justifyContent: 'center',
     width: '70%',
