@@ -475,7 +475,7 @@ export default class CountryPicker extends Component {
               <FlatList
                 keyboardShouldPersistTaps="always"
                 ref={this.onRef}
-                data={this.props.sequenceOrder
+                data={this.props.sequenceOrder.length
                   ? this.props.sequenceOrder
                   : (this.state.cca2ListFiltered || this.state.cca2List)}
                 renderItem={this.renderCountry}
