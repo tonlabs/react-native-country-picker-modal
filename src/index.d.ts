@@ -365,6 +365,10 @@ export interface CountryPickerProps {
      */
     excludedCountries?: CCA2Code[];
     /**
+     * Array of CCA2 codes sequence according to which values in the list should be ordered
+     */
+    sequenceOrder: CCA2Code[];
+    /**
      * The search bar placeholder
      */
     filterPlaceholder?: string;
