@@ -321,7 +321,6 @@ export default class CountryPicker extends Component {
   };
 
   renderCountry = ({item}) => {
-    console.log('render item', item);
     const country = item;
     return (
       <TouchableOpacity
@@ -440,9 +439,6 @@ export default class CountryPicker extends Component {
   };
 
   render() {
-    console.log('sequenceOrder', typeof this.props.sequenceOrder, this.props.sequenceOrder);
-    console.log('cca2ListFiltered', typeof this.state.cca2ListFiltered, this.state.cca2ListFiltered);
-    console.log('cca2List', typeof this.state.cca2List, this.state.cca2List);
     return (
       <View style={styles.container}>
         <TouchableOpacity
