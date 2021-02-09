@@ -72,6 +72,7 @@ export default class CountryPicker extends Component {
     countryList: PropTypes.array,
     disabledCountries: PropTypes.array,
     excludedCountries: PropTypes.array,
+    sequenceOrder: PropTypes.array,
     styles: PropTypes.object,
     filterPlaceholder: PropTypes.string,
     autoFocusFilter: PropTypes.bool,
@@ -96,6 +97,7 @@ export default class CountryPicker extends Component {
     countryList: cca2List,
     disabledCountries: [],
     excludedCountries: [],
+    sequenceOrder: [],
     filterPlaceholder: 'Filter',
     autoFocusFilter: true,
     transparent: false,
@@ -473,7 +475,9 @@ export default class CountryPicker extends Component {
               <FlatList
                 keyboardShouldPersistTaps="always"
                 ref={this.onRef}
-                data={this.state.cca2ListFiltered || this.state.cca2List}
+                data={this.props.sequenceOrder
+                  ? this.props.sequenceOrder
+                  : (this.state.cca2ListFiltered || this.state.cca2List)}
                 renderItem={this.renderCountry}
                 initialNumToRender={30}
                 onLayout={({ nativeEvent: { layout: { y: offset } } }) =>
